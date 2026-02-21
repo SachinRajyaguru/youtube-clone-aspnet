@@ -1,98 +1,138 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-static public class helper
-{
-    static public string conStr = ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
-    static public string query = string.Empty;
 
-    static SqlConnection connection = new SqlConnection(conStr);
-    static DataSet dataset;
-    static SqlDataAdapter adapter;
-    static SqlDataReader reader;
+public static class helper
+{
+    private static readonly string conStr =
+        ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
 
     /*
-     * Boolean crud function for all insert , update or delete and retun true or false
+     * Boolean crud function for insert, update, delete
      */
-    static public Boolean crud(string query)
+    public static Boolean crud(string query, params SqlParameter[] parameters)
     {
+        if (string.IsNullOrWhiteSpace(query))
+            return false;
+
         try
         {
-            if (!string.IsNullOrEmpty(query) && !string.IsNullOrWhiteSpace(query))
+            using (SqlConnection connection = new SqlConnection(conStr))
+            using (SqlCommand command = new SqlCommand(query, connection))
             {
+                if (parameters != null && parameters.Length > 0)
+                    command.Parameters.AddRange(parameters);
+
                 connection.Open();
-                new SqlCommand(query, connection).ExecuteNonQuery();
-                connection.Close();
+                command.ExecuteNonQuery();
                 return true;
             }
-            else return false;
         }
-        catch (Exception e)
+        catch
         {
             return false;
         }
     }
+
     /*
-     * DataSet mybind function for all data binding retun the dataset adjust by query
+     * DataTable mybind function for data binding
      */
-    static public DataTable mybind(string query)
+    public static DataTable mybind(string query, params SqlParameter[] parameters)
     {
         DataTable datatable = new DataTable();
+
+        if (string.IsNullOrWhiteSpace(query))
+            return datatable;
+
         try
         {
-            if (!string.IsNullOrEmpty(query) && !string.IsNullOrWhiteSpace(query))
+            using (SqlConnection connection = new SqlConnection(conStr))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
-                new SqlDataAdapter(new SqlCommand(query, connection)).Fill(datatable);
+                if (parameters != null && parameters.Length > 0)
+                    command.Parameters.AddRange(parameters);
+
+                adapter.Fill(datatable);
             }
         }
-        catch (Exception e)
+        catch
         {
             return datatable;
         }
+
         return datatable;
     }
+
     /*
-     * string getMaxID function for get fieldName,tableName retun the MAXID of the table
+     * getMaxID function to get next ID from table
      */
-    static public string getMaxID(string fieldName, string tableName)
+    public static string getMaxID(string fieldName, string tableName)
     {
         string maxid = "0";
-        if (!string.IsNullOrEmpty(fieldName) && !string.IsNullOrEmpty(tableName) && !string.IsNullOrWhiteSpace(fieldName) && !string.IsNullOrWhiteSpace(tableName))
-        {
-            try
-            {
-                connection.Open();
-                reader = new SqlCommand("SELECT MAX(" + fieldName.ToString() + ") + 1 FROM " + tableName.ToString(), connection).ExecuteReader();
-                if (reader.Read())
-                    maxid = reader.GetValue(0).ToString();
-                reader.Close();
-                connection.Close();
-                return maxid;
-            }
-            catch (Exception ee)
-            {
-                return maxid;
-            }
-        }
-        else return maxid;
-    }
-    static public Hashtable BindDropDown(string query)
-    {
-        Hashtable hastbl = new Hashtable();
+
+        if (string.IsNullOrWhiteSpace(fieldName) || string.IsNullOrWhiteSpace(tableName))
+            return maxid;
+
         try
         {
-            connection.Open();
-            reader = new SqlCommand(query, connection).ExecuteReader();
-            while (reader.Read()) hastbl.Add(reader.GetValue(0).ToString(), reader.GetValue(1).ToString());
-            reader.Close();
-            connection.Close();
+            string query = $"SELECT ISNULL(MAX([{fieldName}]), 0) + 1 FROM [{tableName}]";
+
+            using (SqlConnection connection = new SqlConnection(conStr))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                connection.Open();
+                object result = command.ExecuteScalar();
+                maxid = result?.ToString() ?? "0";
+            }
         }
-        catch (Exception)
+        catch
+        {
+            return maxid;
+        }
+
+        return maxid;
+    }
+
+    /*
+     * BindDropDown returns Hashtable (kept same for compatibility)
+     */
+    public static Hashtable BindDropDown(string query, params SqlParameter[] parameters)
+    {
+        Hashtable hastbl = new Hashtable();
+
+        if (string.IsNullOrWhiteSpace(query))
+            return hastbl;
+
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(conStr))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                if (parameters != null && parameters.Length > 0)
+                    command.Parameters.AddRange(parameters);
+
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        hastbl.Add(
+                            reader[0]?.ToString(),
+                            reader[1]?.ToString()
+                        );
+                    }
+                }
+            }
+        }
+        catch
         {
             return hastbl;
         }
+
         return hastbl;
     }
 }
