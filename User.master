@@ -1,0 +1,38 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="User.master.cs" Inherits="User" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title></title>
+    <link href="BootStrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/menu.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="container-fluid">
+            <ul class="topnav">
+                <li>
+                    <asp:LinkButton runat="server" PostBackUrl="~/frm_Home.aspx">Home</asp:LinkButton>
+                </li>
+                <li>
+                    <asp:LinkButton runat="server" PostBackUrl="~/frm_ProfilePage.aspx">Profile</asp:LinkButton>
+                </li>
+                <li>
+                    <asp:LinkButton runat="server" PostBackUrl="~/frm_Channel.aspx">Channels</asp:LinkButton>
+                </li>
+                <li>
+                    <asp:LinkButton runat="server" PostBackUrl="~/frm_playlist.aspx">PlayList</asp:LinkButton>
+                </li>
+                <li>
+                    <asp:LinkButton runat="server" PostBackUrl="~/frm_videoUpload.aspx">Videos</asp:LinkButton>
+                </li>
+            </ul>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </form>
+</body>
+</html>

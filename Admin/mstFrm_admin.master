@@ -1,0 +1,42 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="mstFrm_admin.master.cs" Inherits="AdminSite_mstFrm_admin" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title></title>
+    <link href="../BootStrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="../css/menu.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+
+        <div class="container-fluid">
+            <ul class="topnav">
+                <li>
+                    <asp:LinkButton ID="LBChannels" runat="server" PostBackUrl="~/Admin/Frm_Channel.aspx">Channels</asp:LinkButton>
+                </li>
+                <li>
+                    <asp:LinkButton ID="LBplaylist" runat="server" PostBackUrl="~/Admin/Frm_playlist.aspx">Playlist</asp:LinkButton>
+                </li>
+                <li>
+                    <asp:LinkButton ID="LBAddCetegory" runat="server" PostBackUrl="~/Admin/frm_AddCatgory.aspx">Add Cetegory</asp:LinkButton>
+                </li>
+                <li>
+                    <asp:LinkButton ID="LBProfiles" runat="server" PostBackUrl="~/Admin/frm_profilelist.aspx">Profiles</asp:LinkButton>
+                </li>
+                <li class="right" style="float: right">
+                    <asp:LinkButton ID="LBLogin" runat="server">LOGOUT</asp:LinkButton>
+                </li>
+                <li class="right" style="float: right">
+                    <asp:LinkButton ID="LBUserID" runat="server" Style="text-decoration: underline"></asp:LinkButton>
+                </li>
+            </ul>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+    </form>
+</body>
+</html>
